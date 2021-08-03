@@ -1,6 +1,6 @@
 locals {
-  resource_group_name                = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
-  location                           = element(coalescelist(data.azurerm_resource_group.rgrp.*.location, azurerm_resource_group.rg.*.location, [""]), 0)
+  resource_group_name                = var.create_resource_group == false ? var.resource_group_name : element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
+  location                           = var.create_resource_group == false ? var.location : element(coalescelist(data.azurerm_resource_group.rgrp.*.location, azurerm_resource_group.rg.*.location, [""]), 0)
   if_threat_detection_policy_enabled = var.enable_threat_detection_policy ? [{}] : []
   #if_extended_auditing_policy_enabled = var.enable_extended_auditing_policy ? [{}] : []
 }

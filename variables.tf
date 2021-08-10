@@ -4,9 +4,10 @@ variable "create_resource_group" {
   default     = true
 }
 
-variable "resource_group_name" {
-  description = "A container that holds related resources for an Azure solution"
-  default     = ""
+variable "resource_group" {
+  description = "An object containing the resource group name and location"
+  type        = object({ name : string, location : string })
+  default     = { "name" : "", "location" : "" }
 }
 
 variable "storage_account_name" {
@@ -14,8 +15,8 @@ variable "storage_account_name" {
   default     = null
 }
 
-variable "log_analytics_workspace_name" {
-  description = "The name of log analytics workspace name"
+variable "log_analytics_workspace_id" {
+  description = "The ID of log analytics workspace"
   default     = null
 }
 
@@ -133,6 +134,11 @@ variable "enable_private_endpoint" {
 
 variable "virtual_network_name" {
   description = "The name of the virtual network"
+  default     = ""
+}
+
+variable "virtual_network_id" {
+  description = "The ID of the virtual network"
   default     = ""
 }
 

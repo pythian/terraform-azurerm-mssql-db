@@ -1,6 +1,6 @@
 locals {
-  resource_group_name                = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
-  location                           = element(coalescelist(data.azurerm_resource_group.rgrp.*.location, azurerm_resource_group.rg.*.location, [""]), 0)
+  resource_group_name                = element(coalescelist((! var.create_resource_group ? [var.resource_group["name"]] : []), azurerm_resource_group.rg.*.name, [""]), 0)
+  location                           = element(coalescelist((! var.create_resource_group ? [var.resource_group["location"]] : []), azurerm_resource_group.rg.*.location, [""]), 0)
   if_threat_detection_policy_enabled = var.enable_threat_detection_policy ? [{}] : []
   #if_extended_auditing_policy_enabled = var.enable_extended_auditing_policy ? [{}] : []
 }
@@ -9,11 +9,6 @@ locals {
 # Resource Group Creation or selection - Default is "false"
 #----------------------------------------------------------
 
-data "azurerm_resource_group" "rgrp" {
-  count = var.create_resource_group == false ? 1 : 0
-  name  = var.resource_group_name
-}
-
 resource "azurerm_resource_group" "rg" {
   count    = var.create_resource_group ? 1 : 0
   name     = var.resource_group_name
@@ -21,19 +16,7 @@ resource "azurerm_resource_group" "rg" {
   tags     = merge({ "Name" = format("%s", var.resource_group_name) }, var.tags, )
 }
 
-data "azurerm_virtual_network" "vnet01" {
-  count               = var.enable_private_endpoint ? 1 : 0
-  name                = var.virtual_network_name
-  resource_group_name = local.resource_group_name
-}
-
 data "azurerm_client_config" "current" {}
-
-data "azurerm_log_analytics_workspace" "logws" {
-  count               = var.log_analytics_workspace_name != null ? 1 : 0
-  name                = var.log_analytics_workspace_name
-  resource_group_name = local.resource_group_name
-}
 
 #---------------------------------------------------------
 # Storage Account to keep Audit logs - Default is "false"
@@ -109,7 +92,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "primary" {
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = var.log_retention_days
-  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_name != null ? true : false
+  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : false
 }
 
 resource "azurerm_sql_server" "secondary" {
@@ -137,7 +120,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "secondary" {
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = var.log_retention_days
-  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_name != null ? true : null
+  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : null
 }
 
 
@@ -173,7 +156,7 @@ resource "azurerm_mssql_database_extended_auditing_policy" "primary" {
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = var.log_retention_days
-  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_name != null ? true : null
+  log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : null
 }
 
 #-----------------------------------------------------------------------------------------------
@@ -387,7 +370,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vent-link1" {
   name                  = "vnet-private-zone-link"
   resource_group_name   = local.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.dnszone1.0.name
-  virtual_network_id    = data.azurerm_virtual_network.vnet01.0.id
+  virtual_network_id    = var.virtual_network_id
   tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, var.tags, )
 }
 
@@ -414,10 +397,10 @@ resource "azurerm_private_dns_a_record" "arecord2" {
 # azurerm monitoring diagnostics  - Default is "false" 
 #------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "extaudit" {
-  count                      = var.enable_log_monitoring == true && var.log_analytics_workspace_name != null ? 1 : 0
+  count                      = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? 1 : 0
   name                       = lower("extaudit-${var.database_name}-diag")
   target_resource_id         = azurerm_sql_database.db.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logws.0.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   storage_account_id         = azurerm_storage_account.storeacc.0.id
 
   dynamic "log" {

@@ -1,5 +1,7 @@
 # Azure SQL Database - Using Failover Groups with Private Endpoints
 
+**Original module source:** [https://github.com/kumarvna/terraform-azurerm-mssql-db/releases/tag/v1.2.0](https://github.com/kumarvna/terraform-azurerm-mssql-db/releases/tag/v1.2.0)  
+
 Terraform module to create an MS SQL server with initial database, Azure AD login, Firewall rules, geo-replication using auto-failover groups, Private endpoints, and corresponding private DNS zone. It also supports creating a database with a custom SQL script initialization.
 
 A single database is the quickest and simplest deployment option for Azure SQL Database. You manage a single database within a SQL Database server, which is inside an Azure resource group in a specified Azure region with this module.

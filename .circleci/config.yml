@@ -1,0 +1,121 @@
+version: 2.1
+
+jobs:
+  get-deps:
+    working_directory: ~/tf-module
+    parallelism: 1
+    shell: /bin/bash --login
+    environment:
+      SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+    docker:
+      - image: quay.io/pra_group/us-prd-sedi-azr-circle
+        auth:
+          username: $CIRCLE_CI_QUAY_USER
+          password: $CIRCLE_CI_QUAY_KEY
+    steps:
+      - checkout
+      - save_cache:
+          key: v1-tf-module-env-{{ .Branch }}-{{ .BuildNum }}
+          paths:
+            - ~/.ssh
+            - ~/tf-module
+
+  fmtcheck:
+    working_directory: ~/tf-module
+    parallelism: 1
+    shell: /bin/bash --login
+    environment:
+      SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+    docker:
+      - image: quay.io/pra_group/us-prd-sedi-azr-circle
+        auth:
+          username: $CIRCLE_CI_QUAY_USER
+          password: $CIRCLE_CI_QUAY_KEY
+    steps:
+      - restore_cache:
+          key: v1-tf-module-env-{{ .Branch }}-
+      - run:
+          name: Terraform fmt -check
+          command: |
+            # Check canonical format and style of the terraform configuration files.
+            terraform fmt -recursive -check -diff
+
+  validate:
+    working_directory: ~/tf-module
+    parallelism: 1
+    shell: /bin/bash --login
+    environment:
+      SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+    docker:
+      - image: quay.io/pra_group/us-prd-sedi-azr-circle
+        auth:
+          username: $CIRCLE_CI_QUAY_USER
+          password: $CIRCLE_CI_QUAY_KEY
+    steps:
+      - restore_cache:
+          key: v1-tf-module-env-{{ .Branch }}-
+      - run:
+          name: Terraform validate
+          command: |
+            # Generate a minimal provider.tf file.
+            WORKING_DIRECTORY="$(pwd)"
+            PROVIDER_TF_FILE="$(mktemp $WORKING_DIRECTORY/provider_XXXXXXXXX).tf"
+            # Note: The "\<<" syntax below is required for CircleCI config v2.1+.
+            cat \<< EOF > "$PROVIDER_TF_FILE"
+            provider "azurerm" {
+              features {}
+            }
+            EOF
+
+            # Initialize the working directory for validation without accessing any configured remote backend.
+            terraform init -backend=false
+
+            # Validate the terraform configuration files.
+            terraform validate
+      - save_cache:
+          key: v1-tf-module-env-{{ .Branch }}-{{ .BuildNum }}
+          paths:
+            - ~/.ssh
+            - ~/tf-module
+
+  test:
+    working_directory: ~/tf-module
+    parallelism: 1
+    shell: /bin/bash --login
+    environment:
+      SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+    docker:
+      - image: quay.io/pra_group/us-prd-sedi-azr-circle
+        auth:
+          username: $CIRCLE_CI_QUAY_USER
+          password: $CIRCLE_CI_QUAY_KEY
+    steps:
+      - restore_cache:
+          key: v1-tf-module-env-{{ .Branch }}-
+      - run:
+          name: Terratest module tests
+          command: |
+            # Determine the current module name.
+            MODULE_NAME="github.com/$(echo $CIRCLE_REPOSITORY_URL | awk -F'github.com:' '{print $NF}' | sed '$ s/.git//')"
+
+            # Run module tests with Terratest.
+            cd test
+            go mod init "$MODULE_NAME"
+            go mod tidy
+            go test -v -timeout 30m
+
+workflows:
+  version: 2
+  fmtcheck-validate-and-test:
+    jobs:
+      - get-deps
+      - fmtcheck:
+          requires:
+            - get-deps
+      - validate:
+          requires:
+            - get-deps
+      - test:
+          requires:
+            - fmtcheck
+            - validate

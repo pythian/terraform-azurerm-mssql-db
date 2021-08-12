@@ -7,7 +7,7 @@
 variable "resource_group_name" {
   description = "An object containing the resource group name and location"
   type        = string
-  default     = { "name" : "", "location" : "" }
+  default     = ""
 }
 
 variable "storage_account_name" {

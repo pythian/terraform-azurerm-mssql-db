@@ -4,7 +4,7 @@ variable "create_resource_group" {
   default     = true
 }
 
-variable "resource_group" {
+variable "resource_group_name" {
   description = "An object containing the resource group name and location"
   type        = object({ name : string, location : string })
   default     = { "name" : "", "location" : "" }

@@ -6,7 +6,7 @@
 
 variable "resource_group_name" {
   description = "An object containing the resource group name and location"
-  type        = object({ name : string, location : string })
+  type        = string
   default     = { "name" : "", "location" : "" }
 }
 

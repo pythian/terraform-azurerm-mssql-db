@@ -1,9 +1,9 @@
-// locals {
-//   resource_group_name                = element(coalescelist((! var.create_resource_group ? [var.resource_group["name"]] : []), azurerm_resource_group.rg.*.name, [""]), 0)
-//   location                           = element(coalescelist((! var.create_resource_group ? [var.resource_group["location"]] : []), azurerm_resource_group.rg.*.location, [""]), 0)
-//   if_threat_detection_policy_enabled = var.enable_threat_detection_policy ? [{}] : []
-//   #if_extended_auditing_policy_enabled = var.enable_extended_auditing_policy ? [{}] : []
-// }
+locals {
+  #resource_group_name                = element(coalescelist((! var.create_resource_group ? [var.resource_group["name"]] : []), azurerm_resource_group.rg.*.name, [""]), 0)
+  #location                           = element(coalescelist((! var.create_resource_group ? [var.resource_group["location"]] : []), azurerm_resource_group.rg.*.location, [""]), 0)
+  if_threat_detection_policy_enabled = var.enable_threat_detection_policy ? [{}] : []
+  #if_extended_auditing_policy_enabled = var.enable_extended_auditing_policy ? [{}] : []
+}
 
 #---------------------------------------------------------
 # Resource Group Creation or selection - Default is "false"

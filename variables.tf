@@ -132,13 +132,23 @@ variable "enable_private_endpoint" {
   default     = false
 }
 
+variable "enable_network_rule" {
+  description = "Manages a Service Endpoint to SQL database"
+  default     = false
+}
+
+variable "virtual_network_id" {
+  description = "The ID of the virtual network"
+  default     = ""
+}
+
 variable "virtual_network_name" {
   description = "The name of the virtual network"
   default     = ""
 }
 
-variable "virtual_network_id" {
-  description = "The ID of the virtual network"
+variable "subnet_id" {
+  description = "The ID of the subnet"
   default     = ""
 }
 

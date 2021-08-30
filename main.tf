@@ -296,6 +296,18 @@ resource "azurerm_sql_failover_group" "fog" {
   }
 }
 
+#---------------------------------------------------------------------
+# Service Endpoint with Virtual Network Rule - Default is "false" 
+#---------------------------------------------------------------------
+
+resource "azurerm_sql_virtual_network_rule" "sqlvnetrule" {
+  count               = var.enable_network_rule ? 1 : 0
+  name                = format("%s-vnet-rule", azurerm_sql_server.primary.name)
+  resource_group_name = var.resource_group_name
+  server_name         = azurerm_sql_server.primary.name
+  subnet_id           = var.subnet_id
+}
+
 #---------------------------------------------------------
 # Private Link for SQL Server - Default is "false" 
 #---------------------------------------------------------

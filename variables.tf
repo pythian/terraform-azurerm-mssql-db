@@ -192,3 +192,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "sqldb_read_scale" {
+  description = "Read-only connections will be redirected to a high-available replica."
+  type        = bool
+  default     = false
+}

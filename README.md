@@ -292,6 +292,7 @@ No modules.
 | <a name="input_secondary_sql_server_location"></a> [secondary\_sql\_server\_location](#input\_secondary\_sql\_server\_location) | Specifies the supported Azure location to create secondary sql server resource | `string` | `"northeurope"` | no |
 | <a name="input_sql_database_edition"></a> [sql\_database\_edition](#input\_sql\_database\_edition) | The edition of the database to be created | `string` | `"Standard"` | no |
 | <a name="input_sqldb_init_script_file"></a> [sqldb\_init\_script\_file](#input\_sqldb\_init\_script\_file) | SQL Script file name to create and initialize the database | `string` | `""` | no |
+| <a name="input_sqldb_read_scale"></a> [sqldb\_read\_scale](#input\_sqldb\_read\_scale) | Read-only connections will be redirected to a high-available replica. | `bool` | `false` | no |
 | <a name="input_sqldb_service_objective_name"></a> [sqldb\_service\_objective\_name](#input\_sqldb\_service\_objective\_name) | The service objective name for the database | `string` | `"S1"` | no |
 | <a name="input_sqlserver_name"></a> [sqlserver\_name](#input\_sqlserver\_name) | SQL server Name | `string` | `""` | no |
 | <a name="input_storage_account_name"></a> [storage\_account\_name](#input\_storage\_account\_name) | The name of the storage account name | `any` | `null` | no |

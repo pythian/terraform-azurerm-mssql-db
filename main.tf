@@ -135,6 +135,7 @@ resource "azurerm_sql_database" "db" {
   server_name                      = azurerm_sql_server.primary.name
   edition                          = var.sql_database_edition
   requested_service_objective_name = var.sqldb_service_objective_name
+  read_scale                       = var.sqldb_read_scale
   tags                             = merge({ "Name" = format("%s-primary", var.database_name) }, var.tags, )
 
   dynamic "threat_detection_policy" {

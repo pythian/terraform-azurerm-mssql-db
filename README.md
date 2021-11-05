@@ -294,6 +294,7 @@ No modules.
 | <a name="input_sqldb_init_script_file"></a> [sqldb\_init\_script\_file](#input\_sqldb\_init\_script\_file) | SQL Script file name to create and initialize the database | `string` | `""` | no |
 | <a name="input_sqldb_read_scale"></a> [sqldb\_read\_scale](#input\_sqldb\_read\_scale) | Read-only connections will be redirected to a high-available replica. | `bool` | `false` | no |
 | <a name="input_sqldb_service_objective_name"></a> [sqldb\_service\_objective\_name](#input\_sqldb\_service\_objective\_name) | The service objective name for the database | `string` | `"S1"` | no |
+| <a name="input_sqldb_zone_redundant"></a> [sqldb\_zone\_redundant](#input\_sqldb\_zone\_redundant) | Defines if the database is zone reduntant or not. | `bool` | `false` | no |
 | <a name="input_sqlserver_name"></a> [sqlserver\_name](#input\_sqlserver\_name) | SQL server Name | `string` | `""` | no |
 | <a name="input_storage_account_name"></a> [storage\_account\_name](#input\_storage\_account\_name) | The name of the storage account name | `any` | `null` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | The ID of the subnet | `string` | `""` | no |

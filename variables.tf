@@ -198,3 +198,9 @@ variable "sqldb_read_scale" {
   type        = bool
   default     = false
 }
+
+variable "sqldb_zone_redundant" {
+  description = "Defines if the database is zone reduntant or not."
+  type        = bool
+  default     = false
+}
